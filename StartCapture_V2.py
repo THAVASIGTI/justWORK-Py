@@ -86,7 +86,7 @@ def startCapture(args):
                     with open(JsonPath, 'w') as cf:
                         json.dump(data, cf)
                     pcapFilePath = fetchPcap(root)
-                    logCompress(LogPath,VmLogPath,ZipPath,baseFileName,root)
+                    logCompress(LogPath,VmLogPath,ZipPath)
                     for pcapFile in pcapFilePath:
                         validateStatus = validateCapture(pcapFile)
                         if not validateStatus:
@@ -143,16 +143,10 @@ def vmLoggingFunction(vm,VmLogPath):
     path = os.path.join(os.path.dirname(vm),"vmware.log")
     shutil.move(path,VmLogPath)
     
-def logCompress(LogPath,VmLogPath,ZipPath,baseFileName,root):
-    dest = os.path.join(root,baseFileName)
-    try:
-       os.mkdir(dest)
-    except OSError as e:
-        print("alredy create folder")
-    shutil.copy(LogPath,dest)
-    shutil.copy(VmLogPath,dest)
-    baseFile = os.path.basename(dest)
-    os.popen("tar -zcvf "+ZipPath+" "+baseFile)
+def logCompress(LogPath,VmLogPath,ZipPath):
+    log = os.path.basename(LogPath)
+    vm = os.path.basename(VmLogPath)
+    os.popen("tar -zcvf "+ZipPath+".tar "+log+" "+vm)
 
 def capturePcap(ifName,filename,tempDir):
     doPcaps(ifName,filename,int(DURATION),tempDir)
